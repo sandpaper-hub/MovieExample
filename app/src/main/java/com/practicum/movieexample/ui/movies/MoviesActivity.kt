@@ -13,7 +13,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.movieexample.ui.poster.PosterActivity
@@ -21,6 +20,7 @@ import com.practicum.movieexample.R
 import com.practicum.movieexample.domain.models.Movie
 import com.practicum.movieexample.presentation.movies.MoviesSearchViewModel
 import com.practicum.movieexample.ui.movies.model.MoviesState
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesActivity : ComponentActivity() {
 
@@ -33,7 +33,7 @@ class MoviesActivity : ComponentActivity() {
     private lateinit var moviesList: RecyclerView
     private lateinit var progressBar: ProgressBar
 
-    private lateinit var viewModel: MoviesSearchViewModel
+    private val viewModel by viewModel<MoviesSearchViewModel>()
 
 
     private val movieAdapter = MovieAdapter(
@@ -63,7 +63,6 @@ class MoviesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        viewModel = ViewModelProvider(this, MoviesSearchViewModel.getViewModelFactory())[MoviesSearchViewModel::class.java]
         viewModel.observeState().observe(this) {
             render(it)
         }
@@ -145,7 +144,7 @@ class MoviesActivity : ComponentActivity() {
         }
     }
 
-    private fun showToast(additionalMessage: String) {
+    private fun showToast(additionalMessage: String?) {
         Toast.makeText(this, additionalMessage, Toast.LENGTH_SHORT).show()
 
     }

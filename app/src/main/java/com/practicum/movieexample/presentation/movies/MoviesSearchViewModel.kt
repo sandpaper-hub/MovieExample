@@ -1,30 +1,20 @@
 package com.practicum.movieexample.presentation.movies
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.movieexample.util.Creator
+import androidx.lifecycle.ViewModel
 import com.practicum.movieexample.domain.api.MoviesInteractor
 import com.practicum.movieexample.domain.models.Movie
 import com.practicum.movieexample.ui.movies.model.MoviesState
 import com.practicum.movieexample.ui.movies.model.SingleLiveEvent
 
-class MoviesSearchViewModel(application: Application) : AndroidViewModel(application) {
+class MoviesSearchViewModel(private val moviesInteractor: MoviesInteractor) : ViewModel() {
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer { MoviesSearchViewModel(this[APPLICATION_KEY] as Application) }
-        }
-
     }
 
     private val stateLiveData = MutableLiveData<MoviesState>()
@@ -39,11 +29,10 @@ class MoviesSearchViewModel(application: Application) : AndroidViewModel(applica
             }
         }
     }
-    private val moviesInteractor = Creator.provideMoviesInteractor(getApplication())
     fun observeState(): LiveData<MoviesState> = mediatorStateLiveData
 
-    private val showToast = SingleLiveEvent<String>()
-    fun observeShowToast(): LiveData<String> = showToast
+    private val showToast = SingleLiveEvent<String?>()
+    fun observeShowToast(): LiveData<String?> = showToast
     private val handler = Handler(Looper.getMainLooper())
 
     private var lastSearchText: String? = null
