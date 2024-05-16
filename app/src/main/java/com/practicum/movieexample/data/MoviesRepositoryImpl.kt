@@ -1,7 +1,11 @@
 package com.practicum.movieexample.data
 
+import android.util.Log
+import com.practicum.movieexample.data.dto.MovieDetailRequest
+import com.practicum.movieexample.data.dto.MovieDetailResponse
 import com.practicum.movieexample.data.dto.MoviesSearchRequest
 import com.practicum.movieexample.data.dto.MoviesSearchResponse
+import com.practicum.movieexample.data.dto.Response
 import com.practicum.movieexample.domain.api.MoviesRepository
 import com.practicum.movieexample.domain.models.Movie
 import com.practicum.movieexample.util.Resource
@@ -27,6 +31,21 @@ class MoviesRepositoryImpl(
             else -> {
                 Resource.Error("Ошибка сервера")
             }
+        }
+    }
+
+    override fun searchMovie(expression: String): Resource<Response> {
+        val response = networkClient.doRequest(MovieDetailRequest(expression))
+        Log.d("EXAMPLE123", response.resultCode.toString())
+        return when (response.resultCode) {
+            -1 -> {
+                Resource.Error("Проверьте подключение к интернету")
+            }
+
+            200 -> {
+                Resource.Success(response as MovieDetailResponse)
+            }
+            else -> Resource.Error("Ошибка сервера")
         }
     }
 

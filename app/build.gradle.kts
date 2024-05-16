@@ -7,6 +7,9 @@ plugins {
 android {
     namespace = "com.practicum.movieexample"
     compileSdk = 34
+    viewBinding {
+        enable = true
+    }
 
     defaultConfig {
         applicationId = "com.practicum.movieexample"

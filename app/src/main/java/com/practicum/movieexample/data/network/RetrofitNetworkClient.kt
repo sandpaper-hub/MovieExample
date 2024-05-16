@@ -3,7 +3,10 @@ package com.practicum.movieexample.data.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.util.Log
 import com.practicum.movieexample.data.NetworkClient
+import com.practicum.movieexample.data.dto.MovieDetailRequest
+import com.practicum.movieexample.data.dto.MovieDetailResponse
 import com.practicum.movieexample.data.dto.MoviesSearchRequest
 import com.practicum.movieexample.data.dto.Response
 
@@ -14,14 +17,23 @@ class RetrofitNetworkClient(private val imdbService: ImdbApi, private val contex
         if (!isConnected()) {
             return Response().apply { resultCode = -1 }
         }
-        return if (dto is MoviesSearchRequest) {
-            val resp = imdbService.findMovie(dto.expression).execute()
+        Log.d("EXAMPLE123", dto.toString())
+        return when (dto) {
+                    is MoviesSearchRequest -> {
+                val resp = imdbService.findMovies(dto.expression).execute()
+                val body = resp.body() ?: Response()
+                body.apply { resultCode = resp.code() }
+            }
 
-            val body = resp.body() ?: Response()
+            is MovieDetailRequest -> {
+                val resp = imdbService.getMovieDetails(dto.id).execute()
+                val body = resp.body() ?: Response()
+                body.apply { resultCode = resp.code() }
+            }
 
-            body.apply { resultCode = resp.code() }
-        } else {
-            Response().apply { resultCode = 400 }
+            else -> {
+                Response().apply { resultCode = 400 }
+            }
         }
     }
 
