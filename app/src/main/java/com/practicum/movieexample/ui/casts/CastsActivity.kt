@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import com.practicum.movieexample.databinding.ActivityCastsBinding
 import com.practicum.movieexample.presentation.movieCast.MovieCastViewModel
 import com.practicum.movieexample.ui.casts.model.MovieCastState
@@ -20,7 +21,7 @@ class CastsActivity : AppCompatActivity() {
         parametersOf(intent.getStringExtra(MOVIE_ID))
     }
 
-    private val adapter = MovieCastAdapter()
+    private val adapter = ListDelegationAdapter(movieCastHeaderDelegate(), movieCastPersonDelegate())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +57,7 @@ class CastsActivity : AppCompatActivity() {
         contentContainer.visibility = View.VISIBLE
 
         movieTitle.text = state.fullTitle
-        adapter.persons = state.items
+        adapter.items = state.items
         adapter.notifyDataSetChanged()
     }
 
