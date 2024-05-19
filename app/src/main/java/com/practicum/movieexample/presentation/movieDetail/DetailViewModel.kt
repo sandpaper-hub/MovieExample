@@ -10,7 +10,7 @@ import com.practicum.movieexample.domain.api.MoviesInteractor
 import com.practicum.movieexample.ui.movieDetail.model.DetailState
 
 class DetailViewModel(
-    private val id: String,
+    val id: String,
     private val moviesInteractor: MoviesInteractor
 ) : ViewModel() {
 

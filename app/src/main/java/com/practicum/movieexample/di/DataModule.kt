@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.practicum.movieexample.data.LocalStorage
 import com.practicum.movieexample.data.NetworkClient
+import com.practicum.movieexample.data.converters.MovieCastConverter
 import com.practicum.movieexample.data.network.ImdbApi
 import com.practicum.movieexample.data.network.RetrofitNetworkClient
 import org.koin.android.ext.koin.androidContext
@@ -34,5 +35,9 @@ val dataModule = module {
 
     single<NetworkClient> {
         RetrofitNetworkClient(get(), androidContext())
+    }
+
+    single<MovieCastConverter> {
+        MovieCastConverter()
     }
 }

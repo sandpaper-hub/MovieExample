@@ -1,4 +1,4 @@
-package com.practicum.movieexample.presentation.movieDetail
+package com.practicum.movieexample.presentation.moviePoster
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
