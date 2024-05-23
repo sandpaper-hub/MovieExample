@@ -1,37 +1,56 @@
 package com.practicum.movieexample.ui.casts
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
-import com.practicum.movieexample.databinding.ActivityCastsBinding
+import com.practicum.movieexample.R
+import com.practicum.movieexample.databinding.FragmentCastsBinding
 import com.practicum.movieexample.presentation.movieCast.MovieCastViewModel
+import com.practicum.movieexample.ui.FragmentExample
 import com.practicum.movieexample.ui.casts.model.MovieCastState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class CastsActivity : AppCompatActivity() {
+class CastsFragment : Fragment() {
     companion object {
         private const val MOVIE_ID = "MOVIE"
+        const val TAG = "CastsFragment"
     }
 
-    private lateinit var binding: ActivityCastsBinding
+    private lateinit var binding: FragmentCastsBinding
     private val viewModel: MovieCastViewModel by viewModel {
-        parametersOf(intent.getStringExtra(MOVIE_ID))
+        parametersOf(requireArguments().getString("MOVIE_ID"))
     }
 
-    private val adapter = ListDelegationAdapter(movieCastHeaderDelegate(), movieCastPersonDelegate())
+    private val adapter =
+        ListDelegationAdapter(movieCastHeaderDelegate(), movieCastPersonDelegate())
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityCastsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentCastsBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.moviesCastRecyclerView.adapter = adapter
-        binding.moviesCastRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.moviesCastRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.observeState().observe(this) {
+        binding.movieTitle.setOnClickListener {
+            parentFragmentManager.beginTransaction().replace(R.id.mainContainer, FragmentExample())
+                .addToBackStack(null)
+                .setReorderingAllowed(true)
+                .commit()
+        }
+
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
     }
@@ -47,13 +66,13 @@ class CastsActivity : AppCompatActivity() {
     private fun showError(state: MovieCastState.Error) = with(binding) {
         progressBar.visibility = View.GONE
         contentContainer.visibility = View.GONE
-        errorMessage.visibility = View.GONE
-        errorMessage.text = state.message
+        placeholderMessage.visibility = View.GONE
+        placeholderMessage.text = state.message
     }
 
     private fun showContent(state: MovieCastState.Content) = with(binding) {
         progressBar.visibility = View.GONE
-        errorMessage.visibility = View.GONE
+        placeholderMessage.visibility = View.GONE
         contentContainer.visibility = View.VISIBLE
 
         movieTitle.text = state.fullTitle
@@ -63,9 +82,7 @@ class CastsActivity : AppCompatActivity() {
 
     private fun showLoading() = with(binding) {
         contentContainer.visibility = View.GONE
-        errorMessage.visibility = View.GONE
+        placeholderMessage.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
     }
-
-
 }

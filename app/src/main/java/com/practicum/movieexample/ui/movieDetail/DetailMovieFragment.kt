@@ -1,22 +1,29 @@
 package com.practicum.movieexample.ui.movieDetail
 
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
+import com.practicum.movieexample.R
 import com.practicum.movieexample.data.dto.MovieDetailResponse
 import com.practicum.movieexample.databinding.FragmentDetailMovieBinding
+import com.practicum.movieexample.navigation.Router
 import com.practicum.movieexample.presentation.movieDetail.DetailViewModel
-import com.practicum.movieexample.ui.casts.CastsActivity
+import com.practicum.movieexample.ui.casts.CastsFragment
 import com.practicum.movieexample.ui.movieDetail.model.DetailState
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class DetailMovieFragment : Fragment() {
     companion object {
         private const val ID = "id"
+        const val TAG = "Details"
 
         fun newInstance(id: String) = DetailMovieFragment().apply {
             arguments = Bundle().apply {
@@ -29,6 +36,7 @@ class DetailMovieFragment : Fragment() {
     private val detailViewModel: DetailViewModel by viewModel<DetailViewModel> {
         parametersOf(requireArguments().getString(ID))
     }
+    private val router: Router by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,9 +53,10 @@ class DetailMovieFragment : Fragment() {
             render(it)
         }
         binding.castButton.setOnClickListener {
-            val intent = Intent(requireContext(), CastsActivity::class.java)
-            intent.putExtra("MOVIE", detailViewModel.id)
-            startActivity(intent)
+            val castsFragment = CastsFragment().apply {
+                arguments = bundleOf("MOVIE_ID" to detailViewModel.id)
+            }
+            router.openFragment(castsFragment)
         }
     }
 

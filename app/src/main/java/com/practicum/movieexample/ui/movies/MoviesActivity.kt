@@ -1,152 +1,36 @@
 package com.practicum.movieexample.ui.movies
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.practicum.movieexample.ui.movieDetail.MovieDetailActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.practicum.movieexample.R
-import com.practicum.movieexample.domain.models.Movie
-import com.practicum.movieexample.presentation.movies.MoviesSearchViewModel
-import com.practicum.movieexample.ui.movies.model.MoviesState
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.practicum.movieexample.databinding.ActivityMainBinding
+import com.practicum.movieexample.navigation.NavigatorHolder
+import com.practicum.movieexample.navigation.NavigatorImpl
+import org.koin.android.ext.android.inject
 
-class MoviesActivity : ComponentActivity() {
+class MoviesActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private val navigatorHolder: NavigatorHolder by inject()
 
-    companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
-
-    private lateinit var queryInput: EditText
-    private lateinit var placeholderMessage: TextView
-    private lateinit var moviesList: RecyclerView
-    private lateinit var progressBar: ProgressBar
-
-    private val viewModel by viewModel<MoviesSearchViewModel>()
-
-
-    private val movieAdapter = MovieAdapter(
-        object : MovieAdapter.MovieClickListener{
-            override fun onMovieClick(movie: Movie) {
-                if (clickDebounce()) {
-                    val intent = Intent(this@MoviesActivity, MovieDetailActivity::class.java)
-                    intent.putExtra("poster", movie.image)
-                    intent.putExtra("id", movie.id)
-                    startActivity(intent)
-                }
-            }
-
-            override fun onFavouriteToggleClick(movie: Movie) {
-                viewModel.toggleFavorite(movie)
-            }
-
-        }
-
-    )
-
-    private var textWatcher: TextWatcher? = null
-
-    private var isClickAllowed = true
-
-    private val mainHandler = Handler(Looper.getMainLooper())
-
+    private val navigator = NavigatorImpl(R.id.mainContainer, supportFragmentManager)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        viewModel.observeState().observe(this) {
-            render(it)
-        }
-        viewModel.observeShowToast().observe(this) {
-            showToast(it)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        }
-
-        placeholderMessage = findViewById(R.id.errorMessage)
-        queryInput = findViewById(R.id.search)
-        moviesList = findViewById(R.id.movie_list)
-        progressBar = findViewById(R.id.progressBar)
-
-        textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.searchDebounce(s?.toString() ?: "")
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-
-        }
-
-        textWatcher.let { queryInput.addTextChangedListener(it) }
-
-        moviesList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        moviesList.adapter = movieAdapter
-    }
-
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            mainHandler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
-    }
-
-    private fun showLoading() {
-        moviesList.visibility = View.GONE
-        placeholderMessage.visibility = View.GONE
-        progressBar.visibility = View.VISIBLE
-    }
-
-    private fun showError(errorMessage: String) {
-        moviesList.visibility = View.GONE
-        placeholderMessage.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
-
-        placeholderMessage.text = errorMessage
-    }
-
-    private fun showEmpty(errorMessage: String) {
-        moviesList.visibility = View.GONE
-        placeholderMessage.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
-
-        placeholderMessage.text = errorMessage
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun showContent(movies: List<Movie>) {
-        moviesList.visibility = View.VISIBLE
-        placeholderMessage.visibility = View.GONE
-        progressBar.visibility = View.GONE
-
-        movieAdapter.movies.clear()
-        movieAdapter.movies.addAll(movies)
-        movieAdapter.notifyDataSetChanged()
-    }
-
-    private fun render(state: MoviesState) {
-        when (state) {
-            is MoviesState.Loading -> showLoading()
-            is MoviesState.Content -> showContent(state.movies)
-            is MoviesState.Empty -> showEmpty(state.message)
-            is MoviesState.Error -> showError(state.errorMessage)
+        if (savedInstanceState == null) {
+            navigator.openFragment(MoviesFragment())
         }
     }
 
-    private fun showToast(additionalMessage: String?) {
-        Toast.makeText(this, additionalMessage, Toast.LENGTH_SHORT).show()
-
+    override fun onResume() {
+        super.onResume()
+        navigatorHolder.attachNavigator(navigator)
     }
+
+    override fun onPause() {
+        super.onPause()
+        navigatorHolder.detachNavigator()
+    }
+
 }

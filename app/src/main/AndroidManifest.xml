@@ -17,12 +17,6 @@
         android:theme="@style/Theme.MovieExample"
         tools:targetApi="31">
         <activity
-            android:name=".ui.movieDetail.MovieDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.casts.CastsActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.movies.MoviesActivity"
             android:exported="true">
             <intent-filter>

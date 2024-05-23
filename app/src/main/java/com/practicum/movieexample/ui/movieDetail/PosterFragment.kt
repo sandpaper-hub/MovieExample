@@ -13,18 +13,18 @@ import org.koin.core.parameter.parametersOf
 
 class PosterFragment : Fragment() {
     companion object {
-        private const val ID = "id"
+        private const val POSTER = "POSTER"
 
         fun newInstance(id: String) = PosterFragment().apply {
             arguments = Bundle().apply {
-                putString(ID, id)
+                putString(POSTER, id)
             }
         }
     }
 
     private lateinit var binding: FragmentPosterBinding
     private val viewModel by viewModel<PosterViewModel>{
-        parametersOf(requireArguments().getString(ID))
+        parametersOf(requireArguments().getString(POSTER))
     }
 
     override fun onCreateView(
