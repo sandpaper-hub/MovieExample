@@ -4,11 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayoutMediator
 import com.practicum.movieexample.databinding.FragmentAboutMovieBinding
 
 class AboutMovieFragment : Fragment() {
+
+    companion object{
+        const val LIST = "LIST"
+        fun createArrayData(list: MutableList<String>): Bundle = bundleOf(LIST to list)
+    }
     private lateinit var binding: FragmentAboutMovieBinding
     private lateinit var tabLayoutMediator: TabLayoutMediator
 
@@ -23,7 +29,7 @@ class AboutMovieFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val aboutMovieData = arguments?.getStringArrayList("POSTER")
+        val aboutMovieData = requireArguments().getStringArrayList(LIST)
 
         val adapter = DetailMovieViewPagerAdapter(aboutMovieData?.get(0).toString(),
             aboutMovieData?.get(1).toString(), childFragmentManager, lifecycle)

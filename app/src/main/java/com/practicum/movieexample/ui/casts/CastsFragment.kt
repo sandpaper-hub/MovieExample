@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import com.practicum.movieexample.R
 import com.practicum.movieexample.databinding.FragmentCastsBinding
 import com.practicum.movieexample.presentation.movieCast.MovieCastViewModel
-import com.practicum.movieexample.ui.FragmentExample
 import com.practicum.movieexample.ui.casts.model.MovieCastState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -18,12 +18,13 @@ import org.koin.core.parameter.parametersOf
 class CastsFragment : Fragment() {
     companion object {
         private const val MOVIE_ID = "MOVIE"
-        const val TAG = "CastsFragment"
+
+        fun createArguments(movieId: String) : Bundle = bundleOf(MOVIE_ID to movieId)
     }
 
     private lateinit var binding: FragmentCastsBinding
     private val viewModel: MovieCastViewModel by viewModel {
-        parametersOf(requireArguments().getString("MOVIE_ID"))
+        parametersOf(requireArguments().getString(MOVIE_ID))
     }
 
     private val adapter =
@@ -42,13 +43,6 @@ class CastsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.moviesCastRecyclerView.adapter = adapter
         binding.moviesCastRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        binding.movieTitle.setOnClickListener {
-            parentFragmentManager.beginTransaction().replace(R.id.mainContainer, FragmentExample())
-                .addToBackStack(null)
-                .setReorderingAllowed(true)
-                .commit()
-        }
 
         viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
