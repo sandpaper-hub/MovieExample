@@ -9,19 +9,28 @@
         android:id="@+id/moviesFragment"
         android:name="com.practicum.movieexample.ui.movies.MoviesFragment"
         android:label="fragment_main"
-        tools:layout="@layout/fragment_main" >
+        tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_moviesFragment_to_aboutMovieFragment"
-            app:destination="@id/aboutMovieFragment" />
+            app:destination="@id/aboutMovieFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/hold_fade_out"
+            app:popEnterAnim="@anim/hold_fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/aboutMovieFragment"
         android:name="com.practicum.movieexample.ui.movieDetail.AboutMovieFragment"
         android:label="fragment_about_movie"
-        tools:layout="@layout/fragment_about_movie" >
+        tools:layout="@layout/fragment_about_movie">
         <action
             android:id="@+id/action_aboutMovieFragment_to_castsFragment"
-            app:destination="@id/castsFragment" />
+            app:destination="@id/castsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/hold_fade_out"
+            app:popEnterAnim="@anim/hold_fade_in"
+            app:popExitAnim="@anim/slide_out_right"
+            />
     </fragment>
     <fragment
         android:id="@+id/castsFragment"
