@@ -1,4 +1,4 @@
-package com.practicum.movieexample.domain.models
+package com.practicum.movieexample.domain.models.cast
 
 data class MovieCasts(
     val imdbId: String,

@@ -1,4 +1,4 @@
-package com.practicum.movieexample.data.dto
+package com.practicum.movieexample.data.dto.cast
 
 data class Casts(
     val actors: List<Actor>,

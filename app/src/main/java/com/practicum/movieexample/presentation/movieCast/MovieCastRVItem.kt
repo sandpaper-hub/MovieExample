@@ -1,6 +1,6 @@
 package com.practicum.movieexample.presentation.movieCast
 
-import com.practicum.movieexample.domain.models.MovieCastPerson
+import com.practicum.movieexample.domain.models.cast.MovieCastPerson
 import com.practicum.movieexample.ui.casts.RVItem
 
 sealed interface MovieCastRVItem: RVItem {

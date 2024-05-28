@@ -3,11 +3,11 @@ package com.practicum.movieexample.data.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.practicum.movieexample.data.NetworkClient
-import com.practicum.movieexample.data.dto.MovieCastsRequest
-import com.practicum.movieexample.data.dto.MovieDetailRequest
-import com.practicum.movieexample.data.dto.MoviesSearchRequest
+import com.practicum.movieexample.data.dto.cast.MovieCastsRequest
+import com.practicum.movieexample.data.dto.detail.MovieDetailRequest
+import com.practicum.movieexample.data.dto.movies.MoviesSearchRequest
 import com.practicum.movieexample.data.dto.Response
+import com.practicum.movieexample.data.dto.people.PeopleSearchRequest
 
 class RetrofitNetworkClient(private val imdbService: ImdbApi, private val context: Context) :
     NetworkClient {
@@ -17,7 +17,7 @@ class RetrofitNetworkClient(private val imdbService: ImdbApi, private val contex
             return Response().apply { resultCode = -1 }
         }
         return when (dto) {
-                    is MoviesSearchRequest -> {
+            is MoviesSearchRequest -> {
                 val resp = imdbService.findMovies(dto.expression).execute()
                 val body = resp.body() ?: Response()
                 body.apply { resultCode = resp.code() }
@@ -31,6 +31,12 @@ class RetrofitNetworkClient(private val imdbService: ImdbApi, private val contex
 
             is MovieCastsRequest -> {
                 val resp = imdbService.getFullCasts(dto.id).execute()
+                val body = resp.body() ?: Response()
+                body.apply { resultCode = resp.code() }
+            }
+
+            is PeopleSearchRequest -> {
+                val resp = imdbService.findPeople(dto.expression).execute()
                 val body = resp.body() ?: Response()
                 body.apply { resultCode = resp.code() }
             }

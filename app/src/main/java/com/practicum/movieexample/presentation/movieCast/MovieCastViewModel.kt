@@ -1,10 +1,9 @@
 package com.practicum.movieexample.presentation.movieCast
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.movieexample.domain.api.MoviesInteractor
-import com.practicum.movieexample.domain.models.MovieCasts
+import com.practicum.movieexample.domain.api.movies.MoviesInteractor
+import com.practicum.movieexample.domain.models.cast.MovieCasts
 import com.practicum.movieexample.ui.casts.model.MovieCastState
 
 class MovieCastViewModel(

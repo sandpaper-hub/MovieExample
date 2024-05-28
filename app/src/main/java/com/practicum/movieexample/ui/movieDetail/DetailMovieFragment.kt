@@ -4,16 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.practicum.movieexample.R
-import com.practicum.movieexample.data.dto.MovieDetailResponse
+import com.practicum.movieexample.data.dto.detail.MovieDetailResponse
 import com.practicum.movieexample.databinding.FragmentDetailMovieBinding
 import com.practicum.movieexample.presentation.movieDetail.DetailViewModel
 import com.practicum.movieexample.ui.casts.CastsFragment
 import com.practicum.movieexample.ui.movieDetail.model.DetailState
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 

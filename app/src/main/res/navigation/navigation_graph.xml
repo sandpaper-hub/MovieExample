@@ -37,4 +37,14 @@
         android:name="com.practicum.movieexample.ui.casts.CastsFragment"
         android:label="fragment_casts"
         tools:layout="@layout/fragment_casts" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.practicum.movieexample.AboutFragment"
+        android:label="fragment_about"
+        tools:layout="@layout/fragment_about" />
+    <fragment
+        android:id="@+id/peopleFragment"
+        android:name="com.practicum.movieexample.ui.people.PeopleFragment"
+        android:label="fragment_people"
+        tools:layout="@layout/fragment_people" />
 </navigation>

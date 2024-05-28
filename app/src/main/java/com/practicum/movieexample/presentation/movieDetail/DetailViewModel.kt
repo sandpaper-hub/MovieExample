@@ -1,12 +1,11 @@
 package com.practicum.movieexample.presentation.movieDetail
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.movieexample.data.dto.MovieDetailResponse
+import com.practicum.movieexample.data.dto.detail.MovieDetailResponse
 import com.practicum.movieexample.data.dto.Response
-import com.practicum.movieexample.domain.api.MoviesInteractor
+import com.practicum.movieexample.domain.api.movies.MoviesInteractor
 import com.practicum.movieexample.ui.movieDetail.model.DetailState
 
 class DetailViewModel(

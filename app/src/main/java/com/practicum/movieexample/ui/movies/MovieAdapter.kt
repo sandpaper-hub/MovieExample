@@ -2,7 +2,7 @@ package com.practicum.movieexample.ui.movies
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.movieexample.domain.models.Movie
+import com.practicum.movieexample.domain.models.search.Movie
 
 class MovieAdapter(private val clickListener: MovieClickListener): RecyclerView.Adapter<MovieViewHolder>() {
     var movies = ArrayList<Movie>()

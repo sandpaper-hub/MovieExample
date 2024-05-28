@@ -1,8 +1,8 @@
-package com.practicum.movieexample.domain.impl
+package com.practicum.movieexample.domain.impl.movies
 
-import com.practicum.movieexample.domain.api.MoviesInteractor
-import com.practicum.movieexample.domain.api.MoviesRepository
-import com.practicum.movieexample.domain.models.Movie
+import com.practicum.movieexample.domain.api.movies.MoviesInteractor
+import com.practicum.movieexample.domain.api.movies.MoviesRepository
+import com.practicum.movieexample.domain.models.search.Movie
 import com.practicum.movieexample.util.Resource
 import java.util.concurrent.Executors
 

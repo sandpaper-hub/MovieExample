@@ -1,18 +1,17 @@
 package com.practicum.movieexample.data.converters
 
 import android.util.Log
-import com.practicum.movieexample.data.dto.Actor
-import com.practicum.movieexample.data.dto.Directors
-import com.practicum.movieexample.data.dto.Item
-import com.practicum.movieexample.data.dto.MovieCastsResponse
-import com.practicum.movieexample.data.dto.Other
-import com.practicum.movieexample.data.dto.Writers
-import com.practicum.movieexample.domain.models.MovieCastPerson
-import com.practicum.movieexample.domain.models.MovieCasts
+import com.practicum.movieexample.data.dto.cast.Actor
+import com.practicum.movieexample.data.dto.cast.Directors
+import com.practicum.movieexample.data.dto.cast.Item
+import com.practicum.movieexample.data.dto.cast.MovieCastsResponse
+import com.practicum.movieexample.data.dto.cast.Other
+import com.practicum.movieexample.data.dto.cast.Writers
+import com.practicum.movieexample.domain.models.cast.MovieCastPerson
+import com.practicum.movieexample.domain.models.cast.MovieCasts
 
 class MovieCastConverter {
     fun convert(response: MovieCastsResponse): MovieCasts {
-        Log.d("SAMPLE123", response.toString())
         return with(response) {
             MovieCasts(
                 response.imDbId,

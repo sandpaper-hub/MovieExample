@@ -9,7 +9,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.practicum.movieexample.R
-import com.practicum.movieexample.domain.models.Movie
+import com.practicum.movieexample.domain.models.search.Movie
 
 class MovieViewHolder(parent: ViewGroup,private val clickListener: MovieAdapter.MovieClickListener) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.movie_view, parent, false)

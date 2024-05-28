@@ -1,4 +1,4 @@
-package com.practicum.movieexample.data
+package com.practicum.movieexample.data.storage
 
 import android.content.SharedPreferences
 

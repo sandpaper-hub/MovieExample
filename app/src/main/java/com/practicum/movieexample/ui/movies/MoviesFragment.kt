@@ -10,17 +10,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.movieexample.R
 import com.practicum.movieexample.databinding.FragmentMainBinding
-import com.practicum.movieexample.domain.models.Movie
+import com.practicum.movieexample.domain.models.search.Movie
 import com.practicum.movieexample.presentation.movies.MoviesSearchViewModel
 import com.practicum.movieexample.ui.movieDetail.AboutMovieFragment
 import com.practicum.movieexample.ui.movies.model.MoviesState
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesFragment : Fragment() {

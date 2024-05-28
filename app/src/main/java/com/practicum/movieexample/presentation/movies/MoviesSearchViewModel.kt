@@ -7,8 +7,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.movieexample.domain.api.MoviesInteractor
-import com.practicum.movieexample.domain.models.Movie
+import com.practicum.movieexample.domain.api.movies.MoviesInteractor
+import com.practicum.movieexample.domain.models.search.Movie
 import com.practicum.movieexample.ui.movies.model.MoviesState
 import com.practicum.movieexample.ui.movies.model.SingleLiveEvent
 

@@ -1,4 +1,6 @@
-package com.practicum.movieexample.data.dto
+package com.practicum.movieexample.data.dto.detail
+
+import com.practicum.movieexample.data.dto.Response
 
 class MovieDetailResponse(
     val id: String,
@@ -11,5 +13,5 @@ class MovieDetailResponse(
     val writers: String,
     val stars: String,
     val plot: String
-):Response(){
+): Response(){
 }

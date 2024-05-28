@@ -3,8 +3,8 @@ package com.practicum.movieexample.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.practicum.movieexample.data.LocalStorage
-import com.practicum.movieexample.data.NetworkClient
+import com.practicum.movieexample.data.storage.LocalStorage
+import com.practicum.movieexample.data.network.NetworkClient
 import com.practicum.movieexample.data.converters.MovieCastConverter
 import com.practicum.movieexample.data.network.ImdbApi
 import com.practicum.movieexample.data.network.RetrofitNetworkClient
@@ -40,4 +40,6 @@ val dataModule = module {
     single<MovieCastConverter> {
         MovieCastConverter()
     }
+
+
 }

@@ -18,12 +18,25 @@ class AboutMovieFragment : Fragment() {
     private lateinit var binding: FragmentAboutMovieBinding
     private lateinit var tabLayoutMediator: TabLayoutMediator
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = FragmentAboutMovieBinding.inflate(layoutInflater)
+        tabLayoutMediator = TabLayoutMediator(
+            binding.detailMovieTabLayout,
+            binding.detailMovieViewPager
+        ) {tab, position ->
+            when (position) {
+                0 -> tab.text = "Poster"
+                1 -> tab.text = "Detail"
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentAboutMovieBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -35,15 +48,6 @@ class AboutMovieFragment : Fragment() {
             aboutMovieData?.get(1).toString(), childFragmentManager, lifecycle)
 
         binding.detailMovieViewPager.adapter = adapter
-        tabLayoutMediator = TabLayoutMediator(
-            binding.detailMovieTabLayout,
-            binding.detailMovieViewPager
-        ) {tab, position ->
-            when (position) {
-                0 -> tab.text = "Poster"
-                1 -> tab.text = "Detail"
-            }
-        }
 
         tabLayoutMediator.attach()
     }

@@ -1,6 +1,6 @@
 package com.practicum.movieexample.ui.movies.model
 
-import com.practicum.movieexample.domain.models.Movie
+import com.practicum.movieexample.domain.models.search.Movie
 
 sealed interface MoviesState {
     object Loading : MoviesState

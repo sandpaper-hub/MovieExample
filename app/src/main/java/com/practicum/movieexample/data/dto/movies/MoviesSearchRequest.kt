@@ -1,3 +1,3 @@
-package com.practicum.movieexample.data.dto
+package com.practicum.movieexample.data.dto.movies
 
 data class MoviesSearchRequest(val expression: String)

@@ -1,9 +1,8 @@
-package com.practicum.movieexample.domain.api
+package com.practicum.movieexample.domain.api.movies
 
-import com.practicum.movieexample.data.dto.Casts
 import com.practicum.movieexample.data.dto.Response
-import com.practicum.movieexample.domain.models.Movie
-import com.practicum.movieexample.domain.models.MovieCasts
+import com.practicum.movieexample.domain.models.search.Movie
+import com.practicum.movieexample.domain.models.cast.MovieCasts
 import com.practicum.movieexample.util.Resource
 
 interface MoviesRepository {
