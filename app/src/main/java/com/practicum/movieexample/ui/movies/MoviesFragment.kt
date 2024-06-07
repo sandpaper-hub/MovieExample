@@ -20,6 +20,7 @@ import com.practicum.movieexample.domain.models.search.Movie
 import com.practicum.movieexample.presentation.movies.MoviesSearchViewModel
 import com.practicum.movieexample.ui.movieDetail.AboutMovieFragment
 import com.practicum.movieexample.ui.movies.model.MoviesState
+import com.practicum.movieexample.util.debounce
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -27,6 +28,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
+    private lateinit var onMovieClickDebounce: (Movie) -> Unit
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
@@ -34,31 +36,10 @@ class MoviesFragment : Fragment() {
 
     private val viewModel by viewModel<MoviesSearchViewModel>()
 
-
-    private val movieAdapter = MovieAdapter(
-        object : MovieAdapter.MovieClickListener {
-            override fun onMovieClick(movie: Movie) {
-                if (clickDebounce()) {
-                    val aboutMovieData = mutableListOf(movie.id, movie.image)
-                    findNavController().navigate(
-                        R.id.action_moviesFragment_to_aboutMovieFragment,
-                        AboutMovieFragment.createArrayData(aboutMovieData)
-                    )
-                }
-            }
-
-            override fun onFavouriteToggleClick(movie: Movie) {
-                viewModel.toggleFavorite(movie)
-            }
-
-        }
-
-    )
-
-    private var textWatcher: TextWatcher? = null
-
     private var isClickAllowed = true
 
+    private var movieAdapter: MovieAdapter? = null
+    private var textWatcher: TextWatcher? = null
     private var clickJob: Job? = null
 
     override fun onCreateView(
@@ -72,6 +53,28 @@ class MoviesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        movieAdapter = MovieAdapter(
+            object : MovieAdapter.MovieClickListener {
+                override fun onMovieClick(movie: Movie) {
+                    (activity as MoviesActivity).animateBottomNavigationView()
+                    onMovieClickDebounce(movie)
+                }
+
+                override fun onFavouriteToggleClick(movie: Movie) {
+                    viewModel.toggleFavorite(movie)
+                }
+
+            })
+
+        onMovieClickDebounce =
+            debounce<Movie>(CLICK_DEBOUNCE_DELAY, lifecycleScope, false) { movie ->
+                val aboutMovieData = mutableListOf(movie.id, movie.image)
+                findNavController().navigate(
+                    R.id.action_moviesFragment_to_aboutMovieFragment,
+                    AboutMovieFragment.createArrayData(aboutMovieData)
+                )
+            }
+
         viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
@@ -84,7 +87,7 @@ class MoviesFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.searchDebounce(s?.toString() ?: "")
+                viewModel.searchDebounce(s.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -96,6 +99,13 @@ class MoviesFragment : Fragment() {
         binding.movieList.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.movieList.adapter = movieAdapter
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        movieAdapter = null
+        binding.movieList.adapter = null
+        textWatcher = null
     }
 
     private fun clickDebounce(): Boolean {
@@ -138,9 +148,9 @@ class MoviesFragment : Fragment() {
         placeholderMessage.visibility = View.GONE
         progressBar.visibility = View.GONE
 
-        movieAdapter.movies.clear()
-        movieAdapter.movies.addAll(movies)
-        movieAdapter.notifyDataSetChanged()
+        movieAdapter?.movies?.clear()
+        movieAdapter?.movies?.addAll(movies)
+        movieAdapter?.notifyDataSetChanged()
     }
 
     private fun render(state: MoviesState) {

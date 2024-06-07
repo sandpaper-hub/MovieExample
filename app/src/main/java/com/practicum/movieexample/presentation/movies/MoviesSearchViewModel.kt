@@ -1,16 +1,16 @@
 package com.practicum.movieexample.presentation.movies
 
 import android.annotation.SuppressLint
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.movieexample.domain.api.movies.MoviesInteractor
 import com.practicum.movieexample.domain.models.search.Movie
 import com.practicum.movieexample.ui.movies.model.MoviesState
 import com.practicum.movieexample.ui.movies.model.SingleLiveEvent
+import com.practicum.movieexample.util.debounce
 
 class MoviesSearchViewModel(private val moviesInteractor: MoviesInteractor) : ViewModel() {
     companion object {
@@ -33,13 +33,11 @@ class MoviesSearchViewModel(private val moviesInteractor: MoviesInteractor) : Vi
 
     private val showToast = SingleLiveEvent<String?>()
     fun observeShowToast(): LiveData<String?> = showToast
-    private val handler = Handler(Looper.getMainLooper())
 
     private var lastSearchText: String? = null
 
-    private val searchRunnable = Runnable {
-        val newSearchText = lastSearchText ?: ""
-        searchRequest(newSearchText)
+    private val movieSearchDebounce = debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, false) {changedText ->
+        searchRequest(changedText)
     }
 
     fun searchDebounce(changedText: String) {
@@ -47,8 +45,7 @@ class MoviesSearchViewModel(private val moviesInteractor: MoviesInteractor) : Vi
             return
         }
         lastSearchText = changedText
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+        movieSearchDebounce(changedText)
     }
 
     private fun searchRequest(newSearchText: String) {
@@ -76,10 +73,6 @@ class MoviesSearchViewModel(private val moviesInteractor: MoviesInteractor) : Vi
                 }
             })
         }
-    }
-
-    override fun onCleared() {
-        handler.removeCallbacks(searchRunnable)
     }
 
     fun renderState(state: MoviesState) {
