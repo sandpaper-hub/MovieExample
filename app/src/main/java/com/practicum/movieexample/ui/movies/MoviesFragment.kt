@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.movieexample.R
@@ -19,6 +20,9 @@ import com.practicum.movieexample.domain.models.search.Movie
 import com.practicum.movieexample.presentation.movies.MoviesSearchViewModel
 import com.practicum.movieexample.ui.movieDetail.AboutMovieFragment
 import com.practicum.movieexample.ui.movies.model.MoviesState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesFragment : Fragment() {
@@ -55,8 +59,7 @@ class MoviesFragment : Fragment() {
 
     private var isClickAllowed = true
 
-    private val mainHandler = Handler(Looper.getMainLooper())
-
+    private var clickJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -99,7 +102,10 @@ class MoviesFragment : Fragment() {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            mainHandler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+            clickJob = lifecycleScope.launch {
+                delay(CLICK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
         }
         return current
     }

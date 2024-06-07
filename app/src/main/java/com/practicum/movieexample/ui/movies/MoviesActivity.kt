@@ -24,23 +24,5 @@ class MoviesActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         binding.bottomNavigationView.setupWithNavController(navController)
-
-        binding.bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.moviesFragment -> navigateToDestination(R.id.moviesFragment, navController)
-                R.id.peopleFragment -> navigateToDestination(R.id.peopleFragment, navController)
-                R.id.aboutFragment -> navigateToDestination(R.id.aboutFragment, navController)
-            }
-            true
-        }
     }
-    private fun navigateToDestination(destinationId: Int, navController: NavController) {
-        val navOptions = NavOptions.Builder()
-            .setLaunchSingleTop(true)
-            .setRestoreState(true)
-            .setPopUpTo(navController.graph.startDestinationId, false)
-            .build()
-        navController.navigate(destinationId, null, navOptions)
-    }
-
 }
