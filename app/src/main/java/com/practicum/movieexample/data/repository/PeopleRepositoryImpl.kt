@@ -6,25 +6,23 @@ import com.practicum.movieexample.data.network.NetworkClient
 import com.practicum.movieexample.domain.api.people.PeopleRepository
 import com.practicum.movieexample.domain.models.people.People
 import com.practicum.movieexample.util.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
-class PeopleRepositoryImpl(private val networkClient: NetworkClient): PeopleRepository {
-    override fun searchPeople(expression: String): Resource<List<People>> {
+class PeopleRepositoryImpl(private val networkClient: NetworkClient) : PeopleRepository {
+    override fun searchPeople(expression: String): Flow<Resource<List<People>>> = flow {
         val response = networkClient.doRequest(PeopleSearchRequest(expression))
-        return when (response.resultCode) {
-            -1 -> Resource.Error("Проверьте подключение к интернету")
+        when (response.resultCode) {
+            -1 -> emit(Resource.Error("Проверьте подключение к интернету"))
             200 -> {
-                Resource.Success((response as PeopleSearchResponse).results.map {
-                    People(
-                        it.id,
-                        it.image,
-                        it.title,
-                        it.description
-                    )
-                })
+                with(response as PeopleSearchResponse) {
+                    val data = results.map { People(it.id, it.image, it.title, it.description) }
+                    emit(Resource.Success(data))
+                }
             }
 
             else -> {
-                Resource.Error("Ошибка сервера")
+                emit(Resource.Error("Ошибка сервера"))
             }
         }
     }

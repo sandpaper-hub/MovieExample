@@ -54,24 +54,28 @@ class PeopleSearchViewModel(private val peopleInteractor: PeopleInteractor) : Vi
         if (newSearchText.isNotEmpty()) {
             renderState(PeopleState.Loading)
 
-            peopleInteractor.searchPeople(newSearchText, object : PeopleInteractor.PeopleConsumer {
-                override fun consume(foundPeople: List<People>?, erroeMessage: String?) {
-                    val people = mutableListOf<People>()
-                    if (foundPeople != null) {
-                        people.addAll(foundPeople)
-                    }
 
-                    when {
-                        erroeMessage != null -> {
-                            renderState(PeopleState.Error("Something went wrong"))
-                        }
-
-                        people.isEmpty() -> renderState(PeopleState.Empty("Nothing found"))
-                        else -> renderState(PeopleState.Content(people))
-                    }
+            viewModelScope.launch {
+                peopleInteractor.searchPeople(newSearchText).collect { pair ->
+                    processResult(pair.first, pair.second)
                 }
+            }
+        }
+    }
 
-            })
+    private fun processResult(foundNames: List<People>?, errorMessage: String?) {
+        val people = mutableListOf<People>()
+        if (foundNames != null) {
+            people.addAll(foundNames)
+        }
+
+        when {
+            errorMessage != null -> {
+                renderState(PeopleState.Error("Something went wrong"))
+            }
+
+            people.isEmpty() -> renderState(PeopleState.Empty("Nothing found"))
+            else -> renderState(PeopleState.Content(people))
         }
     }
 
