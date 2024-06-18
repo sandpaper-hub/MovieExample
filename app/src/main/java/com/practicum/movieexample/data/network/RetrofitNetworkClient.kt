@@ -19,46 +19,40 @@ class RetrofitNetworkClient(private val imdbService: ImdbApi, private val contex
             return Response().apply { resultCode = -1 }
         }
 
-        if (dto !is PeopleSearchRequest) {
+        if (dto !is PeopleSearchRequest && dto !is MoviesSearchRequest && dto !is MovieDetailRequest && dto !is MovieCastsRequest) {
             return Response().apply { resultCode = 400 }
         }
 
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             try {
-                val response = imdbService.findPeople(dto.expression)
-                response.apply { resultCode = 200 }
-            } catch (e: Throwable) { (Response().apply { resultCode = 500 })
+                var response: Response?
+                when (dto) {
+                    is PeopleSearchRequest -> {
+                        response = imdbService.findPeople(dto.expression)
+                        response.apply { resultCode = 200 }
+                    }
+
+                    is MoviesSearchRequest -> {
+                        response = imdbService.findMovies(dto.expression)
+                        response.apply { resultCode = 200 }
+                    }
+
+                    is MovieDetailRequest -> {
+                        response = imdbService.getMovieDetails(dto.id)
+                        response.apply { resultCode = 200 }
+                    }
+
+                    is MovieCastsRequest -> {
+                        response = imdbService.getFullCasts(dto.id)
+                        response.apply { resultCode = 200 }
+                    }
+
+                    else -> Response().apply { resultCode = 400 }
+                }
+            } catch (e: Throwable) {
+                (Response().apply { resultCode = 500 })
             }
         }
-//        return when (dto) {
-//            is MoviesSearchRequest -> {
-//                val resp = imdbService.findMovies(dto.expression).execute()
-//                val body = resp.body() ?: Response()
-//                body.apply { resultCode = resp.code() }
-//            }
-//
-//            is MovieDetailRequest -> {
-//                val resp = imdbService.getMovieDetails(dto.id).execute()
-//                val body = resp.body() ?: Response()
-//                body.apply { resultCode = resp.code() }
-//            }
-//
-//            is MovieCastsRequest -> {
-//                val resp = imdbService.getFullCasts(dto.id).execute()
-//                val body = resp.body() ?: Response()
-//                body.apply { resultCode = resp.code() }
-//            }
-//
-//            is PeopleSearchRequest -> {
-//                val resp = imdbService.findPeople(dto.expression).execute()
-//                val body = resp.body() ?: Response()
-//                body.apply { resultCode = resp.code() }
-//            }
-//
-//            else -> {
-//                Response().apply { resultCode = 400 }
-//            }
-//        }
     }
 
     private fun isConnected(): Boolean {

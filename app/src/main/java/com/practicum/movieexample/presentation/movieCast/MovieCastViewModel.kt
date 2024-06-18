@@ -2,9 +2,11 @@ package com.practicum.movieexample.presentation.movieCast
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.movieexample.domain.api.movies.MoviesInteractor
 import com.practicum.movieexample.domain.models.cast.MovieCasts
 import com.practicum.movieexample.ui.casts.model.MovieCastState
+import kotlinx.coroutines.launch
 
 class MovieCastViewModel(
     private val movieId: String,
@@ -15,16 +17,19 @@ class MovieCastViewModel(
 
     init {
         liveData.postValue(MovieCastState.Loading)
-        moviesInteractor.getMovieCasts(movieId, object : MoviesInteractor.MovieCastsConsumer {
-            override fun consume(movieCast: MovieCasts?, errorMessage: String?) {
-                if (movieCast != null) {
-                    liveData.postValue(castToUiStateContent(movieCast))
-                } else {
-                    liveData.postValue(MovieCastState.Error(errorMessage))
+        viewModelScope.launch {
+            moviesInteractor.getMovieCasts(movieId).collect { pair ->
+                when {
+                    pair.first != null -> {
+                        liveData.postValue(castToUiStateContent(pair.first as MovieCasts))
+                    }
+
+                    else -> {
+                        liveData.postValue(MovieCastState.Error(pair.second))
+                    }
                 }
             }
-
-        })
+        }
     }
 
     private fun castToUiStateContent(cast: MovieCasts): MovieCastState {

@@ -11,6 +11,7 @@ import com.practicum.movieexample.domain.models.search.Movie
 import com.practicum.movieexample.ui.movies.model.MoviesState
 import com.practicum.movieexample.ui.movies.model.SingleLiveEvent
 import com.practicum.movieexample.util.debounce
+import kotlinx.coroutines.launch
 
 class MoviesSearchViewModel(private val moviesInteractor: MoviesInteractor) : ViewModel() {
     companion object {
@@ -20,7 +21,7 @@ class MoviesSearchViewModel(private val moviesInteractor: MoviesInteractor) : Vi
     private val stateLiveData = MutableLiveData<MoviesState>()
 
     private val mediatorStateLiveData = MediatorLiveData<MoviesState>().also { liveData ->
-        liveData.addSource(stateLiveData){movieState ->
+        liveData.addSource(stateLiveData) { movieState ->
             liveData.value = when (movieState) {
                 is MoviesState.Content -> MoviesState.Content(movieState.movies.sortedByDescending { it.inFavourite })
                 is MoviesState.Empty -> movieState
@@ -29,6 +30,7 @@ class MoviesSearchViewModel(private val moviesInteractor: MoviesInteractor) : Vi
             }
         }
     }
+
     fun observeState(): LiveData<MoviesState> = mediatorStateLiveData
 
     private val showToast = SingleLiveEvent<String?>()
@@ -36,9 +38,10 @@ class MoviesSearchViewModel(private val moviesInteractor: MoviesInteractor) : Vi
 
     private var lastSearchText: String? = null
 
-    private val movieSearchDebounce = debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, false) {changedText ->
-        searchRequest(changedText)
-    }
+    private val movieSearchDebounce =
+        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, false) { changedText ->
+            searchRequest(changedText)
+        }
 
     fun searchDebounce(changedText: String) {
         if (lastSearchText == changedText) {
@@ -53,25 +56,20 @@ class MoviesSearchViewModel(private val moviesInteractor: MoviesInteractor) : Vi
 
             renderState(MoviesState.Loading)
 
-            moviesInteractor.searchMovies(newSearchText, object : MoviesInteractor.MoviesConsumer {
-                @SuppressLint("NotifyDataSetChanged")
-                override fun consume(foundMovies: List<Movie>?, errorMessage: String?) {
+            viewModelScope.launch {
+                moviesInteractor.searchMovies(newSearchText).collect { pair ->
                     val movies = mutableListOf<Movie>()
-                    if (foundMovies != null) {
-                        movies.addAll(foundMovies)
+                    if (pair.first != null) {
+                        movies.addAll(pair.first!!)
                     }
 
                     when {
-                        errorMessage != null -> {
-                            renderState(MoviesState.Error("Something went wrong"))
-                            showToast.postValue(errorMessage)
-                        }
-
+                        pair.second != null -> renderState(MoviesState.Error("Something went wrong"))
                         movies.isEmpty() -> renderState(MoviesState.Empty("Nothing found"))
-                        else -> renderState(MoviesState.Content(movies))
+                        else ->renderState(MoviesState.Content(movies))
                     }
                 }
-            })
+            }
         }
     }
 
