@@ -3,6 +3,8 @@ package com.practicum.movieexample.data.repository
 import com.practicum.movieexample.data.storage.LocalStorage
 import com.practicum.movieexample.data.network.NetworkClient
 import com.practicum.movieexample.data.converters.MovieCastConverter
+import com.practicum.movieexample.data.converters.MovieDbConverter
+import com.practicum.movieexample.data.db.AppDatabase
 import com.practicum.movieexample.data.dto.cast.MovieCastsRequest
 import com.practicum.movieexample.data.dto.cast.MovieCastsResponse
 import com.practicum.movieexample.data.dto.detail.MovieDetailRequest
@@ -10,6 +12,7 @@ import com.practicum.movieexample.data.dto.detail.MovieDetailResponse
 import com.practicum.movieexample.data.dto.movies.MoviesSearchRequest
 import com.practicum.movieexample.data.dto.movies.MoviesSearchResponse
 import com.practicum.movieexample.data.dto.Response
+import com.practicum.movieexample.data.dto.movies.MovieDto
 import com.practicum.movieexample.domain.api.movies.MoviesRepository
 import com.practicum.movieexample.domain.models.search.Movie
 import com.practicum.movieexample.domain.models.cast.MovieCasts
@@ -20,8 +23,11 @@ import kotlinx.coroutines.flow.flow
 class MoviesRepositoryImpl(
     private val networkClient: NetworkClient,
     private val localStorage: LocalStorage,
-    private val movieCastConverter: MovieCastConverter
+    private val movieCastConverter: MovieCastConverter,
+    private val appDatabase: AppDatabase,
+    private val movieDbConverter: MovieDbConverter
 ) : MoviesRepository {
+
     override fun searchMovies(expression: String): Flow<Resource<List<Movie>>> = flow {
         val response = networkClient.doRequest(MoviesSearchRequest(expression))
         when (response.resultCode) {
@@ -31,18 +37,13 @@ class MoviesRepositoryImpl(
 
             200 -> {
                 val stored = localStorage.getSavedFavorites()
-                emit(
-                    Resource.Success((response as MoviesSearchResponse).results.map {
-                        Movie(
-                            it.id,
-                            it.resultType,
-                            it.image,
-                            it.title,
-                            it.description,
-                            stored.contains(it.id)
-                        )
-                    })
-                )
+                with(response as MoviesSearchResponse) {
+                    val data = results.map {
+                        Movie(it.id, it.resultType, it.image, it.title, it.description, stored.contains(it.id))
+                    }
+                    saveMovie(results)
+                    emit(Resource.Success(data))
+                }
             }
 
             else -> {
@@ -87,6 +88,11 @@ class MoviesRepositoryImpl(
 
     override fun removeMovieFromFavorites(movie: Movie) {
         localStorage.removeFromFavorites(movie.id)
+    }
+
+    private suspend fun saveMovie(movies: List<MovieDto>) {
+        val movieEntities = movies.map { movie-> movieDbConverter.map(movie) }
+        appDatabase.movieDao().insertMovies(movieEntities)
     }
 
 }

@@ -2,10 +2,13 @@ package com.practicum.movieexample.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.google.gson.Gson
 import com.practicum.movieexample.data.storage.LocalStorage
 import com.practicum.movieexample.data.network.NetworkClient
 import com.practicum.movieexample.data.converters.MovieCastConverter
+import com.practicum.movieexample.data.db.AppDatabase
 import com.practicum.movieexample.data.network.ImdbApi
 import com.practicum.movieexample.data.network.RetrofitNetworkClient
 import org.koin.android.ext.koin.androidContext
@@ -41,5 +44,7 @@ val dataModule = module {
         MovieCastConverter()
     }
 
-
+    single<AppDatabase> {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db").build()
+    }
 }

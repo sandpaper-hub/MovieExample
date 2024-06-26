@@ -10,6 +10,10 @@
         android:icon="@drawable/person"
         android:title="Search People" />
 
+    <item android:id="@+id/historyFragment"
+        android:icon="@drawable/history"
+        android:title="History"/>
+
     <item
         android:id="@+id/aboutFragment"
         android:icon="@drawable/about"

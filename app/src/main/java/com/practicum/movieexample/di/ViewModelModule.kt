@@ -1,5 +1,6 @@
 package com.practicum.movieexample.di
 
+import com.practicum.movieexample.presentation.history.HistoryViewModel
 import com.practicum.movieexample.presentation.movieDetail.DetailViewModel
 import com.practicum.movieexample.presentation.movieCast.MovieCastViewModel
 import com.practicum.movieexample.presentation.moviePoster.PosterViewModel
@@ -27,5 +28,9 @@ val viewModelModule = module {
 
     viewModel<PeopleSearchViewModel>{
         PeopleSearchViewModel(get())
+    }
+
+    viewModel<HistoryViewModel> {
+        HistoryViewModel(get())
     }
 }
